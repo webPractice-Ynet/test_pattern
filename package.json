@@ -1,0 +1,8 @@
+{
+  "name": "test_pattern",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/webPractice-Ynet/test_pattern.git",
+  "author": "仲林 孝太朗 <123windam@gmail.com>",
+  "license": "MIT"
+}
