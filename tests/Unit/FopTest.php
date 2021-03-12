@@ -16,29 +16,31 @@ class FopTest extends BaseTest {
         // $this->assertEquals(20, $addUserId_10_plus(10));
         // $this->assertEquals(40, $addUserId_10_plus(30));
 
-        $addUserId_10_plus = $fop->partial('addUserId', 10);
-        $this->assertEquals(20, $addUserId_10_plus(10));
-        $this->assertEquals(40, $addUserId_10_plus(30));
+        $addUserId_10_plus = $fop->partial('addUserId_array', 10);
+        $this->assertEquals(40, $addUserId_10_plus([10,10,10]));
+        $this->assertEquals(70, $addUserId_10_plus([20,20,20]));
 
-        $addUserId_20_plus_right = $fop->partialRight('addUserId', 20);
-        $this->assertEquals(30, $addUserId_20_plus_right(10));
-        $this->assertEquals(50, $addUserId_20_plus_right(30));
+        $addUserId_20_plus_right = $fop->partialRight('addUserId_array', [20, 20]);
+        $this->assertEquals(80, $addUserId_20_plus_right([20, 20]));
+        $this->assertEquals(100, $addUserId_20_plus_right([30, 30]));
 
-        $addUserId = $fop->curry('addUserId');
-        $this->assertEquals(40, $addUserId(10)(30));
-        $this->assertEquals(60, $addUserId(20)(40));
+    //     $addUserId = $fop->curry('addUserId', 10);
+    //     $this->assertEquals(40, $addUserId(30));
+    //     $this->assertEquals(50, $addUserId(40));
 
-        $addUserId = $fop->curryRight('addUserId');
-        $this->assertEquals(50, $addUserId(20)(30));
-        $this->assertEquals(70, $addUserId(30)(40));
+    //     $addUserId = $fop->curryRight('addUserId', 20);
+    //     $this->assertEquals(50, $addUserId(30));
+    //     $this->assertEquals(60, $addUserId(40));
     }
 }
 
 class TestTarget {
+    public function addUserId_array($base, $plus1, $plus2, $plus3) {
+        return $base + $plus1 + $plus2 + $plus3;
+    }
     public function addUserId($base, $plus) {
         return $base + $plus;
     }
-
     public static function addUserId_static($base, $plus) {
         return $base + $plus;
     }
