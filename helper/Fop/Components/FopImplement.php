@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 namespace Fop\Components;
 
+
 trait FopImplement {
+    
     protected function implementCurry ($leftFlag, $func, $firstArg) {
         $f = function () use ($leftFlag) {
             return function ($func, $firstArg) use ($leftFlag) {
@@ -23,6 +25,7 @@ trait FopImplement {
                     } else {
                         return call_user_func_array($func->bindTo($this), $args);
                     }
+
                 };
             };
         };
@@ -43,7 +46,7 @@ trait FopImplement {
                     }
 
                     $args = cordinateMethods($leftFlag, [
-                        1 => function() use (&$firstArgs, &$args) {
+                        1 => function() use ($firstArgs, $args) {
                             // var_dump("left");
                             return array_merge($firstArgs, $args);
                          
