@@ -1,6 +1,6 @@
 <?php
 //起動
-require_once __DIR__."/../helper/functions/Utility.php";
+// require_once __DIR__."/../helper/functions/Utility.php";
 
 function cordinateMethods ($target_flag, $executOnFlag, $result=null) {
 

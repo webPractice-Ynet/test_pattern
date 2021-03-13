@@ -1,26 +1,8 @@
 <?php declare(strict_types=1);
-namespace Helper\Contracts;
+namespace Fop\Components;
 
-abstract class FopContract {
-    public $bind_target_past = null;
-    public $bind_target;
-    
-    public function __construct($bind_target){
-        $this->bind_target = $bind_target;
-    }
-
-    public function setBindTarget ($obj) {
-        $this->bind_target_past = clone $this->bind_target;
-        $this->bind_target = $obj;
-    }
-
-    public function rewindBindTarget () {
-        $this->bind_target = clone $this->bind_target_past;
-        $this->bind_target_past = null;
-    }
-
-
-    function executeBindedMethod1 ($leftFlag, $func, $firstArg) {
+trait FopImplement {
+    protected function implementCurry ($leftFlag, $func, $firstArg) {
         $f = function () use ($leftFlag) {
             return function ($func, $firstArg) use ($leftFlag) {
                 return function ($arg) use ($leftFlag, $func, $firstArg) {
@@ -48,7 +30,7 @@ abstract class FopContract {
         return $f->bindTo($this->bind_target)()($func, $firstArg);
     }
 
-    function executeBindedMethod2 ($leftFlag, $func, $firstArg) {
+    protected function implementPartial ($leftFlag, $func, $firstArg) {
         $f = function () use ($leftFlag) {
             return function ($func, ...$firstArgs) use ($leftFlag) {
                 return function (...$args) use ($leftFlag, $func, $firstArgs) {

@@ -2,7 +2,7 @@
 namespace Tests\Unit;
 
 use Tests\BaseTest;
-use Helper\Fop;
+use Fop\Fop;
 
 class FopTest extends BaseTest {
     public $value = 2;
