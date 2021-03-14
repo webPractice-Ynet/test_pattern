@@ -13,3 +13,16 @@ function cordinateMethods ($target_flag, $executOnFlag, $result=null) {
     }
     return $result;
 }
+function bootMethod ($bind, $func, $args) {
+    if(gettype($func) === 'string' && method_exists($bind, $func)){
+        return call_user_func_array([$bind, $func], $args);
+    } else {
+        return call_user_func_array($func->bindTo($bind), $args);
+    }
+}
+
+function identity () {
+    return function ($value){
+        return $value;
+    };
+}

@@ -3,7 +3,6 @@ namespace Fop\Contracts;
 
 abstract class FopContract {
     
-
     public $bind_target_past = null;
     public $bind_target;
     

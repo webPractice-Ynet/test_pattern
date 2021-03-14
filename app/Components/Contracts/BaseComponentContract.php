@@ -1,6 +1,6 @@
 <?php
-namespace App\Components\ComponentsContracts;
-abstract class BaseComponents {
+namespace App\Components\Contracts;
+abstract class BaseComponentContract {
 
     public function __construct(){
     }

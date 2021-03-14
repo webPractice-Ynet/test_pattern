@@ -20,11 +20,7 @@ trait FopImplement {
                         }
                     ]);
 
-                    if(gettype($func) === 'string' && method_exists($this, $func)){
-                        return call_user_func_array([$this, $func], $args);
-                    } else {
-                        return call_user_func_array($func->bindTo($this), $args);
-                    }
+                    return bootMethod($this, $func, $args);
 
                 };
             };
@@ -35,7 +31,9 @@ trait FopImplement {
 
     protected function implementPartial ($leftFlag, $func, $firstArg) {
         $f = function () use ($leftFlag) {
+            //可変長引数を使って配列化している。→[0]
             return function ($func, ...$firstArgs) use ($leftFlag) {
+
                 return function (...$args) use ($leftFlag, $func, $firstArgs) {
                     //可変長引数を使うと、配列でやってくるから、階層を減らす
                     if (gettype($firstArgs[0]) === 'array') {
@@ -57,16 +55,35 @@ trait FopImplement {
                         }
                     ]);
 
-                    if(gettype($func) === 'string' && method_exists($this, $func)){
-                        return call_user_func_array([$this, $func], $args);
-                    } else {
-                        return call_user_func_array($func->bindTo($this), $args);
-                    }
+                    return bootMethod($this, $func, $args);
                 };
+
             };
         };
 
         return $f->bindTo($this->bind_target)()($func, $firstArg);
     }
 
+
+    public function implementCompose(...$funcs) {
+
+        $f = function ($arg, $last_func) use ($funcs) {
+            
+            // if ($last_func === null) {
+            //     $last_func = identity();
+            // }
+            array_push($funcs, $last_func);
+            
+            foreach($funcs as $func){
+                if (gettype($arg) !== 'array') {
+                    $arg = [$arg];
+                }
+                $arg = bootMethod($this, $func, $arg);
+            }
+            
+            return $arg;
+        };
+
+        return $f->bindTo($this->bind_target);
+    }
 }
