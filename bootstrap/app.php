@@ -14,7 +14,8 @@ function cordinateMethods ($target_flag, $executOnFlag, $result=null) {
     return $result;
 }
 function bootMethod ($bind, $func, $args) {
-    var_dump($args);
+    //var_dump(__FUNCTION__);
+    //var_dump($args);
     if(gettype($func) === 'string' && method_exists($bind, $func)){
         return call_user_func_array([$bind, $func], $args);
     } else {

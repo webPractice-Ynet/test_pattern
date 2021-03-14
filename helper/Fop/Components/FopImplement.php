@@ -11,11 +11,11 @@ trait FopImplement {
           
                     $args = cordinateMethods($leftFlag, [
                         1 => function() use ($firstArg, $arg) {
-                            // var_dump("left");
+                            // //var_dump("left");
                             return array_merge([$firstArg], [$arg]);
                         },
                         0 => function() use ($firstArg, $arg){
-                            // var_dump("right");
+                            // //var_dump("right");
                             return array_merge([$arg], [$firstArg]);
                         }
                     ]);
@@ -32,29 +32,37 @@ trait FopImplement {
     protected function implementPartial ($leftFlag, $func, $firstArg) {
         $f = function () use ($leftFlag) {
             //可変長引数を使って配列化している。→[0]
-            return function ($func, ...$firstArgs) use ($leftFlag) {
+            return function ($func, $firstArgs) use ($leftFlag) {
 
-                return function (...$args) use ($leftFlag, $func, $firstArgs) {
+                return function ($args) use ($leftFlag, $func, $firstArgs) {//$argsにarrayを渡すにはどうしたら？
                     //可変長引数を使うと、配列でやってくるから、階層を減らす
-                    if (gettype($firstArgs[0]) === 'array') {
-                        $firstArgs = array_shift($firstArgs);
+                    //var_dump("partial １");//ここ！
+                    //var_dump($args);
+                   
+                    if (gettype($firstArgs) !== 'array') {
+                        $firstArgs = [$firstArgs];
                     }
-                    if (gettype($args[0]) === 'array') {
-                        $args = array_shift($args);
+                    if (gettype($args) !== 'array') {
+                        $args = [$args];
                     }
+                    
 
                     $args = cordinateMethods($leftFlag, [
                         1 => function() use ($firstArgs, $args) {
-                            // var_dump("left");
+                            // //var_dump("left");
                             return array_merge($firstArgs, $args);
                          
                         },
                         0 => function() use ($firstArgs, $args){
-                            // var_dump("right");
+                            // //var_dump("right");
                             return array_merge($args, $firstArgs);
                         }
                     ]);
-
+                    //var_dump("bootMethod：partial ２");
+                    //var_dump($args);
+                    
+                    //var_dump("bootMethod：partial 最終");
+                    
                     return bootMethod($this, $func, $args);
                 };
 
@@ -65,25 +73,26 @@ trait FopImplement {
     }
 
 
-    public function implementCompose(...$funcs) {
+    // public function implementCompose(...$funcs) {
 
-        $f = function ($arg, $last_func) use ($funcs) {
+    //     $f = function ($arg, $last_func) use ($funcs) {
             
-            // if ($last_func === null) {
-            //     $last_func = identity();
-            // }
-            array_push($funcs, $last_func);
+    //         // if ($last_func === null) {
+    //         //     $last_func = identity();
+    //         // }
+    //         array_push($funcs, $last_func);
             
-            foreach($funcs as $func){
-                if (gettype($arg) !== 'array') {
-                    $arg = [$arg];
-                }
-                $arg = bootMethod($this, $func, $arg);
-            }
+    //         foreach($funcs as $func){
+    //             if (gettype($arg) !== 'array') {
+    //                 $arg = [$arg];
+    //             }
+    //             $arg = bootMethod($this, $func, $arg);
+    //         }
             
-            return $arg;
-        };
+    //         return $arg;
+    //     };
 
-        return $f->bindTo($this->bind_target);
-    }
+    //     return $f->bindTo($this->bind_target);
+    // }
 }
+

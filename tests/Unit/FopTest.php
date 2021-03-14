@@ -200,16 +200,16 @@ class FopTest extends BaseTest {
         };
 
         //クロージャーだけの場合
-        $composeAdd = $this->fop->compose($add_1, $add_2, $add_2);
-        $this->assertEquals(5, $composeAdd(0, identity()));
+        // $composeAdd = $this->fop->compose($add_1, $add_2, $add_2);
+        // $this->assertEquals(5, $composeAdd(0, identity()));
 
         //インスタンスメソッドだけの場合
         $composeAdd = $this->fop->compose("add_1", "add_2", "add_2");
-        $this->assertEquals(6, $composeAdd(0, 'add_1'));
+        $this->assertEquals(5, $composeAdd(0));
 
         //混合の場合
         $composeAdd = $this->fop->compose("add_1", $add_2, "add_2");
-        $this->assertEquals(5, $composeAdd(0, identity()));
+        $this->assertEquals(5, $composeAdd(0));
 
     }
 
@@ -276,28 +276,33 @@ class FopTest extends BaseTest {
 
     }
 
-    /*
-    * @test
-    */
-    function test_配列条件付きメソッドを実行する場合() {
-        $isNumber = $this->fop->validator(
-            "引数は数値である必要があります。",
-            function ($arg) {
-                // var_dump($arg." ".!is_numeric($arg));
-                return !is_numeric($arg['num']);
-            }
-        );
+    // /*
+    // * @test
+    // */
+    // function test_配列条件付きメソッドを実行する場合() {
+    //     var_dump("   ");
+    //     $isNumber = $this->fop->validator(
+    //         "引数は数値である必要があります。",
+    //         function ($arg) {
+    //             // var_dump($arg." ".!is_numeric($arg));
+                
+    //             var_dump("===制約起動===");
+    //             \var_dump($arg);
+    //             var_dump("============");
+    //             return !is_numeric($arg);
+    //         }
+    //     );
 
-        $pre_Condition = $this->fop->condition1($isNumber);
-        $checkedAdd = $this->fop->compose(
-            $this->fop->partial(
-                $pre_Condition, //事前条件
-                'add_2' //バリデート後の実行するインスタンスメソッド
-            )
-        );
-
-        $this->assertEquals(4, $checkedAdd(2, identity()));
-    }
+    //     $pre_Condition = $this->fop->condition1($isNumber);
+    //     $checkedAdd = $this->fop->compose(
+    //         $this->fop->partial(
+    //             $pre_Condition, //事前条件
+    //             'addData_1' //バリデート後の実行するインスタンスメソッド
+    //         )
+    //     );
+    //     $result = $checkedAdd(['num'=>2, 'test'=>"aaa"]);
+    //     $this->assertEquals(4, $result['num']);
+    // }
 }
 
 class TestTarget {
@@ -321,6 +326,14 @@ class TestTarget {
     }
     public function sqr($num) {
         return $num * $num;
+    }
+
+    public function addData_1($data) {
+        return $data;
+        \var_dump(__FUNCTION__);
+        var_dump($data);
+        $data['num'] = $data['num'] + 1;
+        return $data;
     }
 }
 

@@ -30,10 +30,12 @@ class Fop extends FopContract {
             public $messages = [];
             public $func;
             public function __invoke($arg) {
-                
+                //var_dump("制約チェック開始=====");
+                //var_dump($arg);
                 $func = $this->func;
                 $result = $func($arg);
-
+                //var_dump("制約チェック終了=====");
+                //var_dump($arg);
                 if ($result) {
                     //どこのメソッドでどの値がきた時に、どのエラーメッセージが出るか、明示したい。
                     //現状,validatorを使いまわした時、エラ〜メッセージと状況も結びつきがわからない
@@ -52,16 +54,18 @@ class Fop extends FopContract {
     }
 
     public function condition1(...$validators) {
-        $f = function ($func, ...$args) use ($validators) {
-            if (gettype($args[0]) === 'array') {
-                $args = array_shift($args);
-            }
+        $f = function ($func, ...$args) use ($validators) {//..args ここ怪しい→いや必要
 
+            //var_dump("condtion実行開始");
+            if (gettype($args) !== 'array') {
+                $args = [$args];
+            }
+            
             $result = [];
             foreach($validators as $isValid){
                 $temp_reult = call_user_func_array([$isValid, '__invoke'], $args);
                 if ($temp_reult === false) {
-                    // var_dump("condition fail");
+                    // //var_dump("condition fail");
                     array_push($result, $isValid->message);
                 }
             }
@@ -69,7 +73,7 @@ class Fop extends FopContract {
             if (count($result) >= 1) {
                 return false;
             }
-
+            //var_dump("bootMethod：conditon 最終");
             return bootMethod($this, $func, $args);
         };
 
@@ -80,22 +84,25 @@ class Fop extends FopContract {
 
         // return $this->implementCompose($funcs);
 
-        $f = function ($arg, $last_func=null) use ($funcs_array) {
-            if ($last_func === null) {
-                $last_func = identity();
-            }
-            array_push($funcs_array, $last_func);
-            
+        $f = function ($arg) use ($funcs_array) {//ここ...付与
+            // if ($last_func === null) {
+            //     $last_func = identity();
+            // }
+            array_push($funcs_array, identity());
+                        
             foreach($funcs_array as $execute){
                 if (gettype($arg) !== 'array') {
                     $arg = [$arg];
                 }
-                $arg = bootMethod($this, $execute, $arg);
+                //var_dump("bootMethod：compose ぐるぐる");
+                $arg = bootMethod($this, $execute, $arg);//ここ
+
                 if ($arg == false) {
                     break;
                 }
             }
-            
+            //var_dump("compose実行完了");
+            //var_dump($arg);
             return $arg;
         };
 
