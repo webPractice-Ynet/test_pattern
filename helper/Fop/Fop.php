@@ -76,21 +76,21 @@ class Fop extends FopContract {
         return $f->bindTo($this->bind_target);
     }
 
-    public function compose(...$funcs) {
+    public function compose(...$funcs_array) {
 
         // return $this->implementCompose($funcs);
 
-        $f = function ($arg, $last_func=null) use ($funcs) {
+        $f = function ($arg, $last_func=null) use ($funcs_array) {
             if ($last_func === null) {
                 $last_func = identity();
             }
-            array_push($funcs, $last_func);
+            array_push($funcs_array, $last_func);
             
-            foreach($funcs as $func){
+            foreach($funcs_array as $execute){
                 if (gettype($arg) !== 'array') {
                     $arg = [$arg];
                 }
-                $arg = bootMethod($this, $func, $arg);
+                $arg = bootMethod($this, $execute, $arg);
                 if ($arg == false) {
                     break;
                 }

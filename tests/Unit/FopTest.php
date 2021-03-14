@@ -275,6 +275,29 @@ class FopTest extends BaseTest {
         $this->assertEquals(14, $checkedMegaAdd(2, identity()));
 
     }
+
+    /*
+    * @test
+    */
+    function test_配列条件付きメソッドを実行する場合() {
+        $isNumber = $this->fop->validator(
+            "引数は数値である必要があります。",
+            function ($arg) {
+                // var_dump($arg." ".!is_numeric($arg));
+                return !is_numeric($arg['num']);
+            }
+        );
+
+        $pre_Condition = $this->fop->condition1($isNumber);
+        $checkedAdd = $this->fop->compose(
+            $this->fop->partial(
+                $pre_Condition, //事前条件
+                'add_2' //バリデート後の実行するインスタンスメソッド
+            )
+        );
+
+        $this->assertEquals(4, $checkedAdd(2, identity()));
+    }
 }
 
 class TestTarget {
