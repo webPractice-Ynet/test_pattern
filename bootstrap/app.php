@@ -14,8 +14,8 @@ function cordinateMethods ($target_flag, $executOnFlag, $result=null) {
     return $result;
 }
 function bootMethod ($bind, $func, $args) {
-    //var_dump(__FUNCTION__);
-    //var_dump($args);
+    logDump(__FUNCTION__);
+    logDump($args);
     if(gettype($func) === 'string' && method_exists($bind, $func)){
         return call_user_func_array([$bind, $func], $args);
     } else {
@@ -23,8 +23,24 @@ function bootMethod ($bind, $func, $args) {
     }
 }
 
+function bootMethod2 ($bind, $func, $args) {
+    logDump(__FUNCTION__);
+    logDump($args);
+    if(gettype($func) === 'string' && method_exists($bind, $func)){
+        return call_user_func([$bind, $func], $args);
+    } else {
+        return call_user_func($func->bindTo($bind), $args);
+    }
+}
+
 function identity () {
     return function ($value){
         return $value;
     };
+}
+
+function logDump ($value) {
+    if (false) {
+        var_dump($value);
+    }
 }

@@ -23,6 +23,10 @@ class Fop extends FopContract {
         return $this->implementPartial(false, $func, $firstArg);
     }
 
+    public function partial2($func, $firstArg) {
+        return $this->implementPartial(true, $func, $firstArg, true);
+    }
+
     public function validator($message, $func) {
         //バインドしてはいけない
         $obj = new Class (){
@@ -30,17 +34,20 @@ class Fop extends FopContract {
             public $messages = [];
             public $func;
             public function __invoke($arg) {
-                //var_dump("制約チェック開始=====");
-                //var_dump($arg);
+                
+                logDump("制約チェック開始=====");
+                
+                
                 $func = $this->func;
                 $result = $func($arg);
-                //var_dump("制約チェック終了=====");
-                //var_dump($arg);
+                logDump("制約チェック終了=====");
+                logDump($arg);
                 if ($result) {
+                    logDump("バリデート失敗");
                     //どこのメソッドでどの値がきた時に、どのエラーメッセージが出るか、明示したい。
                     //現状,validatorを使いまわした時、エラ〜メッセージと状況も結びつきがわからない
-                    $errorMessage = $arg." : ".$this->message;
-                    array_push($this->messages, $errorMessage);
+                    // $errorMessage = $arg." : ".$this->message;
+                    array_push($this->messages, "aaaa");
                     return false;
 
                 } else {
@@ -53,19 +60,23 @@ class Fop extends FopContract {
         return $obj;
     }
 
-    public function condition1(...$validators) {
-        $f = function ($func, ...$args) use ($validators) {//..args ここ怪しい→いや必要
+    public function condition(...$validators) {
+        $f = function ($func, ...$args) use ($validators) {
 
-            //var_dump("condtion実行開始");
+            logDump("condtion実行開始");
             if (gettype($args) !== 'array') {
                 $args = [$args];
             }
-            
+     
+            logDump($args);
             $result = [];
             foreach($validators as $isValid){
-                $temp_reult = call_user_func_array([$isValid, '__invoke'], $args);
+              
+                $temp_reult = call_user_func_array('call_user_func_array', [[$isValid, '__invoke'], $args]);
+            
+            
                 if ($temp_reult === false) {
-                    // //var_dump("condition fail");
+                    // logDump("condition fail");
                     array_push($result, $isValid->message);
                 }
             }
@@ -73,8 +84,38 @@ class Fop extends FopContract {
             if (count($result) >= 1) {
                 return false;
             }
-            //var_dump("bootMethod：conditon 最終");
-            return bootMethod($this, $func, $args);
+            logDump("bootMethod：conditon 最終");
+            return call_user_func_array('bootMethod', [$this, $func, $args]);
+        };
+        return $f->bindTo($this->bind_target);
+    }
+
+    public function condition2(...$validators) {
+      
+        $f = function ($args) use ($validators) {//..args ここ怪しい→いや必要
+
+            logDump("condtion実行開始");
+            
+            $func = \array_shift($args);
+            logDump($args);
+
+            $result = [];
+            foreach($validators as $isValid){
+              
+                $temp_reult = call_user_func([$isValid, '__invoke'], $args);
+            
+            
+                if ($temp_reult === false) {
+                    // logDump("condition fail");
+                    array_push($result, $isValid->message);
+                }
+            }
+            
+            if (count($result) >= 1) {
+                return false;
+            }
+            logDump("bootMethod：conditon 最終");
+            return bootMethod2($this, $func, $args);
         };
 
         return $f->bindTo($this->bind_target);
@@ -88,21 +129,21 @@ class Fop extends FopContract {
             // if ($last_func === null) {
             //     $last_func = identity();
             // }
-            array_push($funcs_array, identity());
-                        
+            // array_push($funcs_array, identity());
+            // if (gettype($arg) !== 'array') {
+            //     $arg = [$arg];
+            // }  
             foreach($funcs_array as $execute){
-                if (gettype($arg) !== 'array') {
-                    $arg = [$arg];
-                }
-                //var_dump("bootMethod：compose ぐるぐる");
-                $arg = bootMethod($this, $execute, $arg);//ここ
+               
+                logDump("bootMethod：compose ぐるぐる");
+                $arg = bootMethod2($this, $execute, $arg);//ここ
 
                 if ($arg == false) {
                     break;
                 }
             }
-            //var_dump("compose実行完了");
-            //var_dump($arg);
+            logDump("compose実行完了");
+            logDump($arg);
             return $arg;
         };
 

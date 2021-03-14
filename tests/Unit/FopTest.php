@@ -44,6 +44,10 @@ class FopTest extends BaseTest {
         $this->assertEquals(80, $addUserId_20_plus_right([20, 20]));
         $this->assertEquals(100, $addUserId_20_plus_right([30, 30]));
         
+
+        $addUserId_10_plus = $this->fop->partial('addUserId_array', 10);
+        $this->assertEquals(40, $addUserId_10_plus([10,10,10]));
+
     }
 
 
@@ -88,15 +92,15 @@ class FopTest extends BaseTest {
         $zero = $this->fop->validator(
             "0 は使用不可です。",
             function ($arg) {
-                // \var_dump("0　不可：".$arg." : ".($arg === 0));
+                // \logDump("0　不可：".$arg." : ".($arg === 0));
                 return $arg === 0;
             }
         );
         $isNumber = $this->fop->validator(
             "引数は数値である必要があります。",
             function ($arg) {
-                // \var_dump("文字　不可：".!is_numeric($arg));
-                // var_dump(!is_numeric($arg));
+                // \logDump("文字　不可：".!is_numeric($arg));
+                // logDump(!is_numeric($arg));
                 return !is_numeric($arg);
             }
         );
@@ -104,11 +108,11 @@ class FopTest extends BaseTest {
         //validatorを直接的に組み込んだ場合
         // $sqr = function ($arg) use ($zero, $isNumber) {
         //     if (!$zero($arg)) {
-        //         var_dump($zero->message);
+        //         logDump($zero->message);
         //         return false;
         //     }
         //     if (!$isNumber($arg)) {
-        //         var_dump($isNumber->message);
+        //         logDump($isNumber->message);
         //         return false;
         //     }
         //     return $arg * $arg;
@@ -119,7 +123,7 @@ class FopTest extends BaseTest {
         // $this->assertEquals(false, $sqr("aa"));
 
         //validatorを内部に組み込んだ場合
-        $valid = $this->fop->condition1($zero, $isNumber);
+        $valid = $this->fop->condition($zero, $isNumber);
         $this->assertEquals(10, $valid(identity(), 10) );
         $this->assertEquals(false, $valid(identity(), 0));
         $this->assertEquals(false, $valid(identity(), "aa"));
@@ -137,19 +141,19 @@ class FopTest extends BaseTest {
         $zero = $this->fop->validator(
             "0 は使用不可です。",
             function ($arg) {
-                // \var_dump("0　不可：".$arg." : ".($arg === 0));
+                // \logDump("0　不可：".$arg." : ".($arg === 0));
                 return $arg === 0;
             }
         );
         $isNumber = $this->fop->validator(
             "引数は数値である必要があります。",
             function ($arg) {
-                // \var_dump("文字　不可：".!is_numeric($arg));
-                // var_dump(!is_numeric($arg));
+                // \logDump("文字　不可：".!is_numeric($arg));
+                // logDump(!is_numeric($arg));
                 return !is_numeric($arg);
             }
         );
-        $valid = $this->fop->condition1($zero, $isNumber);
+        $valid = $this->fop->condition($zero, $isNumber);
 
         $sqr = function ($num) {
             return $num * $num;
@@ -169,7 +173,7 @@ class FopTest extends BaseTest {
         );
 
         $sillySquare = $this->fop->partial(
-            $this->fop->condition1($isEven),
+            $this->fop->condition($isEven),
             $checkedSqr
         );
 
@@ -181,7 +185,7 @@ class FopTest extends BaseTest {
         //インスタンスメソッドの場合
         $checkedSqr2 = $this->fop->partial($valid, 'sqr');
         $sillySquare2 = $this->fop->partial(
-            $this->fop->condition1($isEven),
+            $this->fop->condition($isEven),
             $checkedSqr2
         );
         $this->assertEquals(4, $sillySquare2(2));
@@ -208,8 +212,8 @@ class FopTest extends BaseTest {
         $this->assertEquals(5, $composeAdd(0));
 
         //混合の場合
-        $composeAdd = $this->fop->compose("add_1", $add_2, "add_2");
-        $this->assertEquals(5, $composeAdd(0));
+        // $composeAdd = $this->fop->compose("add_1", $add_2, "add_2");
+        // $this->assertEquals(5, $composeAdd(0));
 
     }
 
@@ -229,7 +233,7 @@ class FopTest extends BaseTest {
         $isNumber = $this->fop->validator(
             "引数は数値である必要があります。",
             function ($arg) {
-                // var_dump($arg." ".!is_numeric($arg));
+                // logDump($arg." ".!is_numeric($arg));
                 return !is_numeric($arg);
             }
         );
@@ -237,13 +241,13 @@ class FopTest extends BaseTest {
         $isEven = $this->fop->validator(
             "結果は偶数である必要があります。",
             function ($arg) {
-                // var_dump($arg." ".($arg%2 !== 0));
+                // logDump($arg." ".($arg%2 !== 0));
                 return $arg%2 !== 0;
             }
         );
 
-        $pre_Condition = $this->fop->condition1($zero, $isNumber);
-        $post_Condition = $this->fop->condition1($isEven);
+        $pre_Condition = $this->fop->condition($zero, $isNumber);
+        $post_Condition = $this->fop->condition($isEven);
 
         $checkedAdd = $this->fop->compose(
             $this->fop->partial(
@@ -276,33 +280,33 @@ class FopTest extends BaseTest {
 
     }
 
-    // /*
-    // * @test
-    // */
-    // function test_配列条件付きメソッドを実行する場合() {
-    //     var_dump("   ");
-    //     $isNumber = $this->fop->validator(
-    //         "引数は数値である必要があります。",
-    //         function ($arg) {
-    //             // var_dump($arg." ".!is_numeric($arg));
+    /*
+    * @test
+    */
+    function test_配列条件付きメソッドを実行する場合() {
+        logDump("   ");
+        $isNumber = $this->fop->validator(
+            "引数は数値である必要があります。",
+            function ($arg) {
+                // logDump($arg." ".!is_numeric($arg));
                 
-    //             var_dump("===制約起動===");
-    //             \var_dump($arg);
-    //             var_dump("============");
-    //             return !is_numeric($arg);
-    //         }
-    //     );
+                logDump("===制約起動===");
+                logDump($arg);
+                logDump("============");
+                return !is_numeric($arg['num']);
+            }
+        );
 
-    //     $pre_Condition = $this->fop->condition1($isNumber);
-    //     $checkedAdd = $this->fop->compose(
-    //         $this->fop->partial(
-    //             $pre_Condition, //事前条件
-    //             'addData_1' //バリデート後の実行するインスタンスメソッド
-    //         )
-    //     );
-    //     $result = $checkedAdd(['num'=>2, 'test'=>"aaa"]);
-    //     $this->assertEquals(4, $result['num']);
-    // }
+        $pre_Condition = $this->fop->condition2($isNumber);
+        $checkedAdd = $this->fop->compose(
+            $this->fop->partial2(
+                $pre_Condition, //事前条件
+                'addData_1' //バリデート後の実行するインスタンスメソッド
+            )
+        );
+        $result = $checkedAdd(['num'=>2, 'test'=>"aaa"]);
+        $this->assertEquals(3, $result['num']);
+    }
 }
 
 class TestTarget {
@@ -318,7 +322,7 @@ class TestTarget {
     }
 
     public function add_1($num) {
-        return ++$num;
+        return $num + 1;
     }
 
     public function add_2($num) {
@@ -329,9 +333,7 @@ class TestTarget {
     }
 
     public function addData_1($data) {
-        return $data;
-        \var_dump(__FUNCTION__);
-        var_dump($data);
+    
         $data['num'] = $data['num'] + 1;
         return $data;
     }
