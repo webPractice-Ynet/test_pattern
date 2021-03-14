@@ -229,6 +229,7 @@ class FopTest extends BaseTest {
         $isNumber = $this->fop->validator(
             "引数は数値である必要があります。",
             function ($arg) {
+                // var_dump($arg." ".!is_numeric($arg));
                 return !is_numeric($arg);
             }
         );
@@ -236,26 +237,43 @@ class FopTest extends BaseTest {
         $isEven = $this->fop->validator(
             "結果は偶数である必要があります。",
             function ($arg) {
+                // var_dump($arg." ".($arg%2 !== 0));
                 return $arg%2 !== 0;
             }
         );
 
-        $pre_Condition = $this->fop->condition1($isEven);
-        $post_Condition = $this->fop->condition1($zero, $isNumber);
+        $pre_Condition = $this->fop->condition1($zero, $isNumber);
+        $post_Condition = $this->fop->condition1($isEven);
 
-        $checkedSqr = $this->fop->compose(
+        $checkedAdd = $this->fop->compose(
             $this->fop->partial(
                 $pre_Condition, //事前条件
-                'sqr' //バリデート後の実行するインスタンスメソッド
+                'add_2' //バリデート後の実行するインスタンスメソッド
             ),
+            $this->fop->partial(
+                $pre_Condition, //事前条件
+                'add_2' //バリデート後の実行するインスタンスメソッド
+            ),
+            'add_2',
             $this->fop->partial(
                 $post_Condition, //事後条件
                 identity()
             )
         );
 
-        $this->assertEquals(4, $checkedSqr(2, identity()));
-        // $this->assertEquals(false, $megaCheckedSqr(5));
+        $this->assertEquals(8, $checkedAdd(2, identity()));
+        $this->assertEquals(false, $checkedAdd(0));
+        $this->assertEquals(false, $checkedAdd("a"));
+
+        $checkedMegaAdd = $this->fop->compose(
+            $this->fop->partial(
+                $pre_Condition, //事前条件
+                $checkedAdd //バリデート後の実行するインスタンスメソッド
+            ),
+            $checkedAdd
+        );
+        $this->assertEquals(14, $checkedMegaAdd(2, identity()));
+
     }
 }
 

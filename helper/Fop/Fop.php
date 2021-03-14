@@ -91,6 +91,9 @@ class Fop extends FopContract {
                     $arg = [$arg];
                 }
                 $arg = bootMethod($this, $func, $arg);
+                if ($arg == false) {
+                    break;
+                }
             }
             
             return $arg;
