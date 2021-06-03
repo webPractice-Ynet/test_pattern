@@ -44,3 +44,9 @@ function logDump ($value) {
         var_dump($value);
     }
 }
+
+function array_push_roop ($data_list, &$target_list) {
+    foreach ($data_list as $data_list) {
+        array_push($target_list, $data_list);
+    }
+}
