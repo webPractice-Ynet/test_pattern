@@ -20,7 +20,6 @@ class Director {
         ]);
 
         $this->builder->makeString('夜に');
-        $this->builder->makeString('朝から昼にかけて');
         $this->builder->makeItems([
             'こんばんは。',
             'おやすみなさい',

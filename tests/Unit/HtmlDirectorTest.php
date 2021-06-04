@@ -8,6 +8,7 @@ use App\Domain\HtmlDirector\Director;
 use App\Domain\HtmlDirector\Builder;
 use App\Domain\HtmlDirector\Components\TextBuilder;
 use App\Domain\HtmlDirector\Components\HtmlBuilder;
+use App\Domain\HtmlDirector\Components\CsvBuilder;
 
 class HtmlDirectorTest extends BaseTest {
     public static function setUpBeforeClass(): void
@@ -36,15 +37,33 @@ class HtmlDirectorTest extends BaseTest {
         $director = new Director($builder);
 
         $director->construct();
-        $result = $builder->getResult();
-        echo($result);
+        // $result = $builder->getResult();
+        // echo($result);
     }
 
     /* Builderパターン
     * @test
     */
     public function test_htmlテキスト出力 () {
-        
+        $builder = new HtmlBuilder();
+        $director = new Director($builder);
+
+        $director->construct();
+        // $result = $builder->getResult();
+        // echo($result);
+
+    }
+
+    /* Builderパターン
+    * @test
+    */
+    public function test_Csvテキスト出力 () {
+        $builder = new CsvBuilder();
+        $director = new Director($builder);
+
+        $director->construct();
+        // $result = $builder->getResult();
+        // echo($result);
 
     }
 }

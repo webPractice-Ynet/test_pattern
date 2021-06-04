@@ -3,39 +3,38 @@ namespace App\Domain\HtmlDirector\Components;
 use App\Domain\HtmlDirector\Builder;
 use Helper\Utils\Writer;
 
-class HtmlBuilder extends Builder {
+class CsvBuilder extends Builder {
     private $file_name;
     private $writer;
-
+    private $count = 0;
     public function buildTitle ($str) {
-        $file_name = $str.".txt";
+        $file_name = $str.".csv";
         $this->writer = new Writer($file_name);
         $this->writer
-            ->println("=======================================")
-            ->println("「 $str 」");
+            ->println("number, text");
     }
 
     public function buildString ($str) {
-        $this->writer
-            ->println("■ $str");
+        $this->insertRow ($str);
     }
 
     public function buildItems ($array) {
-
         foreach ($array as $element) {
-            $this->writer->println("・$element");
+            $this->insertRow ($element);
         }
-
     }
 
     public function buildClose () {
-        $this->writer
-            ->println("=======================================")
-            ->close();
+        $this->writer->close();
     }
 
     public function getResult () {
         return $this->file_name;
+    }
+
+    private function insertRow ($str) {
+        $this->writer->println("$this->count, $str");
+        $this->count = $this->count + 1;
     }
 
 }

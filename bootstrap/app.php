@@ -50,3 +50,6 @@ function array_push_roop ($data_list, &$target_list) {
         array_push($target_list, $data_list);
     }
 }
+
+
+define('STRAGE_PATH', 'storage');
